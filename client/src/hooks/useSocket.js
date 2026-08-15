@@ -1,9 +1,10 @@
 import { io } from 'socket.io-client';
 import { useEffect, useRef, useState, useCallback } from 'react';
 
-const queryParams = new URLSearchParams(window.location.search);
-const targetPort = queryParams.get('port') || '3001';
-const SERVER_URL = `http://localhost:${targetPort}`;
+const SERVER_URL = import.meta.env.PROD 
+  ? 'https://clinicflow-backend-8yli.onrender.com' 
+  : 'http://localhost:3001';
+
 
 /**
  * Custom hook for Socket.IO connection management.
