@@ -12,53 +12,69 @@ ClinicFlow is a modern, real-time hospital queue management system designed to s
 - **High-Performance Queuing:** Utilizes Redis as an in-memory message broker to handle real-time queue states efficiently.
 - **Automated Feedback System:** Automatically redirects patients to a feedback portal upon completion of their visit.
 
-## 🛠️ Technology Stack
-- **Frontend:** React.js, Vite, Custom Vanilla CSS (Glassmorphism & Micro-animations)
-- **Backend:** Node.js, Express.js
-- **Database & Caching:** MongoDB, Redis
-- **Real-Time Engine:** Socket.io
-- **Third-Party APIs:** Twilio SMS
+## 🏗️ Project Structure
+```text
+clinicflow/
+├── client/                 # Frontend React Application
+│   ├── src/
+│   │   ├── components/     # UI Components (AdminPanel, IntakeForm, QueueStatus)
+│   │   ├── hooks/          # Custom React hooks (useSocket)
+│   │   ├── App.jsx         # Main React Component
+│   │   └── index.css       # Custom Glassmorphism Styles
+│   ├── package.json
+│   └── vite.config.js      # Vite Configuration
+│
+└── server/                 # Backend Node.js Application
+    ├── config/             # DB & Redis configurations
+    ├── models/             # Mongoose Schemas (Patient)
+    ├── routes/             # Express API Routes
+    ├── services/           # Business Logic (SmsService)
+    ├── server.js           # Express App & Socket.io Entry Point
+    └── package.json
+```
 
-## 🚀 How to Run Locally
+## 🧠 Architecture Details
 
-### Prerequisites
-Make sure you have [Node.js](https://nodejs.org/) and [Docker](https://www.docker.com/) (or local instances of MongoDB & Redis) installed.
+### Frontend (Client)
+- **Framework:** React.js powered by Vite for lightning-fast HMR and optimized builds.
+- **State Management:** Custom React hooks manage local state and real-time socket connections.
+- **Real-Time UI:** `socket.io-client` listens for server events to update the queue instantly across all connected clients.
+- **Styling:** Vanilla CSS focusing on a modern, responsive Glassmorphism aesthetic without heavy CSS frameworks.
 
-### 1. Setup the Backend
-Open a terminal and run the following commands:
+### Backend (Server)
+- **Core Server:** Node.js with Express.js handling RESTful API requests (if needed) and static routing.
+- **Real-Time Engine:** Socket.io handles bidirectional communication. It broadcasts events like `patient_added`, `patient_called`, and `patient_completed` to all connected clients.
+- **Database:** MongoDB Atlas is used for persistent storage of patient records, ensuring data integrity even if the server restarts.
+- **In-Memory Cache / PubSub:** Upstash Redis is integrated with Socket.io using the Redis Adapter. This ensures that if the backend scales horizontally to multiple instances, WebSocket events are seamlessly broadcasted across all servers.
+- **SMS Microservice:** A custom `SmsService.js` integrates with Twilio's API to send SMS notifications to patients when they are called. (Currently defaults to a mock-logger for development to bypass telecom DLT restrictions).
+
+## 🚀 Live Deployment Architecture
+
+This project is configured for cloud-native deployment:
+1. **Frontend:** Hosted on [Vercel](https://vercel.com/) for global CDN distribution.
+2. **Backend:** Hosted on [Render](https://render.com/) running a Node.js web service.
+3. **Databases:** Hosted on MongoDB Atlas and Upstash Redis.
+
+### Local Development Setup
+
+Open a terminal and run the backend:
 ```bash
 cd server
 npm install
-```
-
-Create a `.env` file in the `server` directory and add your configurations (comment out Twilio keys to use the local Mock SMS Service):
-```env
-PORT=3001
-MONGODB_URI=mongodb://localhost:27018/clinicflow
-REDIS_URL=redis://localhost:6379
-CLIENT_URL=http://localhost:5173
-
-# TWILIO_ACCOUNT_SID=your_sid
-# TWILIO_AUTH_TOKEN=your_token
-# TWILIO_PHONE_NUMBER=your_number
-```
-Start the backend server:
-```bash
 npm start
 ```
 
-### 2. Setup the Frontend
-Open a **second** terminal and run:
+Open a **second** terminal and run the frontend:
 ```bash
 cd client
 npm install
 npm run dev
 ```
-Navigate to `http://localhost:5173` in your browser to view the application!
+Navigate to `http://localhost:5173` in your browser.
 
 ## 📸 Usage Guide
 1. Select **Patient** to join the queue and enter your details.
 2. Select **Admin** to view the live dashboard. Click **Call** to simulate sending an SMS to the patient, and click **Complete** to process them out of the queue.
 
 ---
-*Built by Saransh*
+*Built by Saransh Chaudhary*
