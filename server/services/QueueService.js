@@ -42,7 +42,7 @@ class QueueService {
     // Push to Redis queue
     await this.redis.rpush(queueKey, ticketId);
 
-    console.log(`➕ Patient joined (${queueType}): ${name} (${ticketId}) at position ${position + 1}`);
+    logger.info(`➕ Patient joined (${queueType}): ${name} (${ticketId}) at position ${position + 1}`);
 
     return patient.toJSON();
   }
@@ -71,14 +71,14 @@ class QueueService {
     );
 
     if (!patient) {
-      console.error(`⚠️  Patient ${ticketId} not found in MongoDB during callNext`);
+      logger.error(`⚠️  Patient ${ticketId} not found in MongoDB during callNext`);
       return { success: false, message: 'Patient not found' };
     }
 
     // Reindex positions for remaining patients
     await this._reindexPositions(queueType);
 
-    console.log(`📣 Called patient: ${patient.name} (${ticketId})`);
+    logger.info(`📣 Called patient: ${patient.name} (${ticketId})`);
 
     return { success: true, patient: patient.toJSON() };
   }
@@ -107,7 +107,7 @@ class QueueService {
     await this.redis.lrem(QUEUE_KEY_STD, 0, ticketId);
     await this.redis.lrem(QUEUE_KEY_SNR, 0, ticketId);
 
-    console.log(`✅ Completed patient: ${patient.name} (${ticketId})`);
+    logger.info(`✅ Completed patient: ${patient.name} (${ticketId})`);
 
     return { success: true, patient: patient.toJSON() };
   }
@@ -140,7 +140,7 @@ class QueueService {
     // Reindex positions
     await this._reindexPositions(patient.queueType);
 
-    console.log(`🗑️  Removed patient: ${patient.name} (${ticketId})`);
+    logger.info(`🗑️  Removed patient: ${patient.name} (${ticketId})`);
 
     return { success: true, patient: patient.toJSON() };
   }
@@ -181,7 +181,7 @@ class QueueService {
 
       return { standard, senior, called: calledPatient, stats };
     } catch (error) {
-      console.error('Error fetching queue from Redis, falling back to MongoDB:', error.message);
+      logger.error('Error fetching queue from Redis, falling back to MongoDB:', error.message);
       return this._getQueueFromMongo();
     }
   }
@@ -216,7 +216,7 @@ class QueueService {
     ]);
 
     if (stdLen > 0 || snrLen > 0) {
-      console.log(`🔄 Redis queues intact. Standard: ${stdLen}, Senior: ${snrLen}`);
+      logger.info(`🔄 Redis queues intact. Standard: ${stdLen}, Senior: ${snrLen}`);
       return;
     }
 
@@ -225,7 +225,7 @@ class QueueService {
       .exec();
 
     if (waitingPatients.length === 0) {
-      console.log('🔄 No patients to recover. Queues are empty.');
+      logger.info('🔄 No patients to recover. Queues are empty.');
       return;
     }
 
@@ -242,7 +242,7 @@ class QueueService {
     });
     await pipeline.exec();
 
-    console.log(`🔄 Recovered ${waitingPatients.length} patients from MongoDB into Redis queues.`);
+    logger.info(`🔄 Recovered ${waitingPatients.length} patients from MongoDB into Redis queues.`);
   }
 
   // ─── PRIVATE HELPERS ───────────────────────────────────

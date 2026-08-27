@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+require('./Staff');
 
 const patientSchema = new mongoose.Schema(
   {
@@ -20,6 +21,12 @@ const patientSchema = new mongoose.Schema(
       maxlength: 500,
       default: '',
     },
+    aiScreening: {
+      urgency: { type: String, enum: ['🔴 High', '🟡 Medium', '🟢 Normal'], default: '🟢 Normal' },
+      conditions: [{ type: String }],
+      specialty: { type: String },
+      screenedAt: { type: Date }
+    },
     age: {
       type: Number,
       required: [true, 'Age is required'],
@@ -36,13 +43,56 @@ const patientSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['waiting', 'called', 'completed', 'removed'],
-      default: 'waiting',
+      enum: [
+        'registered',
+        'waiting_general',
+        'waiting_doctor',
+        'with_doctor',
+        'transferred',
+        'completed',
+        'no_show',
+      ],
+      default: 'registered',
       index: true,
     },
-    position: {
+    assignedDoctor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Staff',
+      default: null,
+    },
+    priority: {
       type: Number,
       default: 0,
+    },
+    consultationStartAt: {
+      type: Date,
+      default: null,
+    },
+    missedCalls: {
+      type: Number,
+      default: 0,
+    },
+    transferHistory: [
+      {
+        fromDoctor: { type: mongoose.Schema.Types.ObjectId, ref: 'Staff' },
+        toDoctor: { type: mongoose.Schema.Types.ObjectId, ref: 'Staff' },
+        reason: String,
+        transferredAt: { type: Date, default: Date.now },
+      },
+    ],
+    auditLog: [
+      {
+        fromStatus: String,
+        toStatus: String,
+        actorId: String,
+        actorRole: String,
+        note: String,
+        timestamp: { type: Date, default: Date.now },
+      },
+    ],
+    position: {
+      type: Number,
+      default: 0, // Keeping this for backward compatibility if needed, though Redis sorted sets will handle queue order
     },
     joinedAt: {
       type: Date,
@@ -62,8 +112,9 @@ const patientSchema = new mongoose.Schema(
   }
 );
 
-// Compound index for efficient queue queries
-patientSchema.index({ status: 1, position: 1 });
+// Indexes
+patientSchema.index({ status: 1, priority: -1, joinedAt: 1 });
+patientSchema.index({ assignedDoctor: 1, status: 1 });
 
 // Virtual: wait time in minutes
 patientSchema.virtual('waitTimeMinutes').get(function () {

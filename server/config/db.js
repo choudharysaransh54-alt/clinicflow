@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/clinicflow';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/clinicflow';
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(MONGODB_URI);
-    console.log('✅ MongoDB connected:', MONGODB_URI);
+    await mongoose.connect(MONGO_URI);
+    console.log('✅ MongoDB connected:', MONGO_URI);
   } catch (error) {
     console.error('❌ MongoDB connection error:', error.message);
     process.exit(1);

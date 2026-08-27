@@ -1,28 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import LoginGate from '../components/LoginGate';
-import '../components/LoginGate.css';
 import './RoleSelect.css';
 
 export default function RoleSelect() {
   const navigate = useNavigate();
-  const [showLogin, setShowLogin] = useState(false);
-
-  const handleLogin = () => {
-    sessionStorage.setItem('clinicflow_auth', 'true');
-    navigate('/dashboard');
-  };
-
-  if (showLogin) {
-    return (
-      <div className="role-login-wrapper">
-        <button className="role-back-btn" onClick={() => setShowLogin(false)}>
-          ← Back
-        </button>
-        <LoginGate onLogin={handleLogin} />
-      </div>
-    );
-  }
 
   return (
     <div className="role-select-page">
@@ -51,14 +32,26 @@ export default function RoleSelect() {
             <div className="role-card-arrow">→</div>
           </button>
 
-          {/* Admin Card */}
+          {/* Doctor Card */}
           <button
             className="role-card admin-card"
-            onClick={() => setShowLogin(true)}
+            style={{ background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(14, 165, 233, 0.05))', borderColor: 'rgba(56, 189, 248, 0.3)' }}
+            onClick={() => navigate('/login/doctor')}
+          >
+            <div className="role-card-icon" style={{ background: 'linear-gradient(135deg, #38bdf8, #0ea5e9)' }}>🩺</div>
+            <h3>I'm a Doctor</h3>
+            <p>Access your queue, call patients and view history</p>
+            <div className="role-card-arrow" style={{ color: '#38bdf8' }}>→</div>
+          </button>
+
+          {/* Staff/Admin Card */}
+          <button
+            className="role-card admin-card"
+            onClick={() => navigate('/login/staff')}
           >
             <div className="role-card-icon">🖥️</div>
             <h3>I'm Staff / Admin</h3>
-            <p>Manage the queue, call patients and view analytics</p>
+            <p>Manage the clinic, add staff, and view analytics</p>
             <div className="role-card-arrow">→</div>
           </button>
         </div>
