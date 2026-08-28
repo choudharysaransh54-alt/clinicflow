@@ -9,7 +9,7 @@ const authenticate = (req, res, next) => {
   const token = authHeader.replace('Bearer ', '');
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {
@@ -31,7 +31,7 @@ const optionalAuthenticate = (req, res, next) => {
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.replace('Bearer ', '');
     try {
-      req.user = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
+      req.user = jwt.verify(token, process.env.JWT_SECRET);
     } catch (error) {
       // Ignored for optional auth
     }

@@ -1,4 +1,5 @@
 const express = require('express');
+const { body, validationResult } = require('express-validator');
 const MedicalRecord = require('../models/MedicalRecord');
 const { requireRole, authenticate } = require('../middleware/auth');
 const logger = require('../config/logger');
@@ -6,7 +7,7 @@ const logger = require('../config/logger');
 const router = express.Router();
 
 // Get medical record by patient phone
-router.get('/:phone', authenticate, requireRole('admin', 'doctor', 'nurse'), async (req, res, next) => {
+router.get('/:phone', authenticate, requireRole('admin', 'doctor'), async (req, res, next) => {
   try {
     const { phone } = req.params;
     let record = await MedicalRecord.findOne({ patientPhone: phone });
@@ -24,8 +25,24 @@ router.get('/:phone', authenticate, requireRole('admin', 'doctor', 'nurse'), asy
 });
 
 // Create or update a patient's profile (allergies, chronic conditions, etc)
-router.put('/:phone/profile', authenticate, requireRole('admin', 'doctor', 'nurse'), async (req, res, next) => {
+router.put('/:phone/profile', 
+  authenticate, 
+  requireRole('admin', 'doctor'),
+  [
+    body('patientName').optional().isString().trim().escape(),
+    body('bloodGroup').optional().isString().trim(),
+    body('allergies').optional().isArray(),
+    body('allergies.*').optional().isString().trim(),
+    body('chronicConditions').optional().isArray(),
+    body('chronicConditions.*').optional().isString().trim(),
+  ],
+  async (req, res, next) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const { phone } = req.params;
     const { patientName, dateOfBirth, bloodGroup, allergies, chronicConditions } = req.body;
 

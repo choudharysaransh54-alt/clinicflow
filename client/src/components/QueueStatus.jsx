@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import './QueueStatus.css';
 
 export default function QueueStatus({ patient, queueData }) {
   const [estimatedWait, setEstimatedWait] = useState(null);
@@ -12,22 +11,18 @@ export default function QueueStatus({ patient, queueData }) {
 
   if (patient.status === 'removed') {
     return (
-      <div className="queue-status">
-        <div className="status-header" style={{ background: 'rgba(239, 68, 68, 0.1)' }}>
-          <h2 style={{ color: '#ef4444' }}>Ticket Cancelled</h2>
-          <p>Your queue ticket has been cancelled. Please speak to the receptionist if this was a mistake.</p>
-        </div>
+      <div className="card" style={{ borderLeft: '4px solid var(--status-removed)' }}>
+        <h2 style={{ color: 'var(--status-removed)', marginBottom: '0.5rem', fontWeight: 700 }}>Ticket Cancelled</h2>
+        <p style={{ color: 'var(--text-gray)' }}>Your queue ticket has been cancelled. Please speak to the receptionist if this was a mistake.</p>
       </div>
     );
   }
 
   if (patient.status === 'completed') {
     return (
-      <div className="queue-status">
-        <div className="status-header" style={{ background: 'rgba(34, 197, 94, 0.1)' }}>
-          <h2 style={{ color: '#22c55e' }}>Consultation Complete</h2>
-          <p>Thank you for visiting ClinicFlow. You may now close this page.</p>
-        </div>
+      <div className="card" style={{ borderLeft: '4px solid var(--status-called)' }}>
+        <h2 style={{ color: 'var(--status-called)', marginBottom: '0.5rem', fontWeight: 700 }}>Consultation Complete</h2>
+        <p style={{ color: 'var(--text-gray)' }}>Thank you for visiting ClinicFlow. You may now close this page.</p>
       </div>
     );
   }
@@ -36,47 +31,62 @@ export default function QueueStatus({ patient, queueData }) {
   const totalWaiting = (queueData?.standard?.length || 0) + (queueData?.senior?.length || 0);
 
   return (
-    <div className={`queue-status ${isCalled ? 'is-called' : ''}`}>
-      <div className="status-header">
-        <h2>{isCalled ? "It's your turn!" : "You're in the queue"}</h2>
-        <p className="ticket-id">Ticket: <span>{patient.ticketId.toUpperCase()}</span></p>
+    <div className={`card ${isCalled ? 'hover-lift' : ''}`} style={{ border: isCalled ? '2px solid var(--primary)' : '1px solid var(--border-light)', position: 'relative', overflow: 'hidden' }}>
+      {isCalled && (
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', backgroundColor: 'var(--primary)' }} />
+      )}
+      
+      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: isCalled ? 'var(--primary)' : 'var(--text-dark)' }}>
+          {isCalled ? "It's your turn!" : "You're in the queue"}
+        </h2>
+        <p style={{ fontSize: '1.25rem', color: 'var(--text-gray)', marginTop: '0.5rem' }}>
+          Ticket: <span style={{ fontWeight: 700, color: 'var(--text-dark)' }}>{patient.ticketId.toUpperCase()}</span>
+        </p>
+        
         {patient.queueType === 'senior' && (
-          <span className="queue-type-badge">⭐ Senior Priority Queue</span>
+          <div style={{ display: 'inline-block', marginTop: '0.5rem', backgroundColor: '#FEF3C7', color: '#D97706', padding: '0.25rem 0.75rem', borderRadius: 'var(--border-radius-full)', fontSize: '0.875rem', fontWeight: 600 }}>
+            ⭐ Senior Priority Queue
+          </div>
         )}
         
         {patient.assignedDoctor && (
-          <div style={{ marginTop: '1rem', padding: '0.8rem', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--border-glass)', borderRadius: 'var(--radius-sm)', display: 'inline-block' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Assigned to:</span><br/>
-            <strong style={{ fontSize: '1.1rem', color: 'var(--accent-primary)' }}>{patient.assignedDoctor.name}</strong> 
-            <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}> ({patient.assignedDoctor.specialty})</span>
+          <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: 'var(--bg-accent)', borderRadius: 'var(--border-radius-sm)', display: 'inline-block' }}>
+            <span style={{ fontSize: '0.875rem', color: 'var(--text-gray)' }}>Assigned to:</span><br/>
+            <strong style={{ fontSize: '1.25rem', color: 'var(--primary)' }}>Dr. {patient.assignedDoctor.name}</strong> 
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-gray)', marginTop: '0.25rem' }}>{patient.assignedDoctor.specialty}</div>
           </div>
         )}
       </div>
 
-      <div className="position-card">
-        <div className="position-info">
-          <span className="label">{isCalled ? 'Go to counter' : 'Your Position'}</span>
-          <span className="number">{isCalled ? 'Now' : `#${patient.position}`}</span>
+      <div style={{ backgroundColor: 'var(--bg-color)', padding: '1.5rem', borderRadius: 'var(--border-radius-md)', textAlign: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <span style={{ fontSize: '0.875rem', color: 'var(--text-gray)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
+            {isCalled ? 'Go to counter' : 'Your Position'}
+          </span>
+          <span style={{ fontSize: '3rem', fontWeight: 700, color: isCalled ? 'var(--primary)' : 'var(--text-dark)', lineHeight: 1, marginTop: '0.5rem' }}>
+            {isCalled ? 'Now' : `#${patient.position}`}
+          </span>
         </div>
         
         {!isCalled && !patient.doctorOffline && patient.aiWaitMessage && (
-          <div className="wait-info" style={{ background: 'rgba(139, 92, 246, 0.1)', borderColor: 'rgba(139, 92, 246, 0.3)' }}>
-            <span style={{ fontSize: '1.2rem' }}>✨</span>
-            <span style={{ color: '#e2e8f0' }}>
+          <div style={{ backgroundColor: 'white', padding: '1rem', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--primary)', display: 'flex', alignItems: 'flex-start', gap: '0.75rem', textAlign: 'left' }}>
+            <span style={{ fontSize: '1.25rem' }}>✨</span>
+            <span style={{ color: 'var(--primary)', fontSize: '0.875rem', fontWeight: 500, lineHeight: 1.5 }}>
               {patient.aiWaitMessage}
             </span>
           </div>
         )}
 
         {patient.doctorOffline && (
-          <div className="wait-info" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)', flexWrap: 'wrap' }}>
-            <div style={{ width: '100%', marginBottom: '0.5rem' }}>
-              <strong>⚠️ Doctor Offline</strong>
+          <div style={{ backgroundColor: '#FEE2E2', padding: '1rem', borderRadius: 'var(--border-radius-sm)', border: '1px solid #EF4444', color: '#B91C1C', textAlign: 'left' }}>
+            <div style={{ fontWeight: 600, marginBottom: '0.5rem' }}>
+              ⚠️ Doctor Offline
             </div>
-            <div style={{ fontSize: '0.9rem' }}>
+            <div style={{ fontSize: '0.875rem', lineHeight: 1.5 }}>
               Your assigned doctor is currently off-shift.
               {patient.nextAvailableTime ? (
-                <> The next available doctor for this specialty will be online at <strong style={{ color: 'white' }}>{new Date(patient.nextAvailableTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</strong>.</>
+                <> The next available doctor for this specialty will be online at <strong style={{ color: '#991B1B' }}>{new Date(patient.nextAvailableTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</strong>.</>
               ) : (
                 <> No upcoming shifts are scheduled for this specialty. Please see the receptionist.</>
               )}
@@ -86,15 +96,8 @@ export default function QueueStatus({ patient, queueData }) {
       </div>
 
       {!isCalled && (
-        <div className="queue-context">
-          <p>Total patients waiting: <strong>{totalWaiting}</strong></p>
-        </div>
-      )}
-
-      {isCalled && (
-        <div className="action-pulse">
-          <div className="pulse-ring"></div>
-          <div className="pulse-ring delay"></div>
+        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: 'var(--text-gray)' }}>
+          Total patients waiting: <strong style={{ color: 'var(--text-dark)' }}>{totalWaiting}</strong>
         </div>
       )}
     </div>

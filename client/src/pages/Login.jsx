@@ -6,7 +6,7 @@ export default function Login({ type = 'staff' }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -33,7 +33,6 @@ export default function Login({ type = 'staff' }) {
       } else if (user.role === 'pharmacist') {
         navigate('/pharmacy');
       } else {
-        // Fallback for unknown staff roles
         navigate('/admin');
       }
     } catch (err) {
@@ -42,31 +41,62 @@ export default function Login({ type = 'staff' }) {
   };
 
   return (
-    <div className="login-container" style={{ padding: '2rem', maxWidth: '400px', margin: 'auto' }}>
-      <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', marginBottom: '1rem', padding: 0 }}>← Back</button>
-      <h2>{type === 'doctor' ? 'Doctor Login' : 'Staff / Admin Login'}</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <input 
-          type="email" 
-          placeholder="Email" 
-          value={email} 
-          onChange={(e) => setEmail(e.target.value)} 
-          required 
-          style={{ padding: '0.5rem' }}
-        />
-        <input 
-          type="password" 
-          placeholder="Password" 
-          value={password} 
-          onChange={(e) => setPassword(e.target.value)} 
-          required 
-          style={{ padding: '0.5rem' }}
-        />
-        <button type="submit" style={{ padding: '0.5rem', background: '#007bff', color: 'white', border: 'none', cursor: 'pointer' }}>
-          Login
-        </button>
-      </form>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+      <button onClick={() => navigate('/')} className="btn-outline" style={{ marginBottom: '2rem', alignSelf: 'flex-start', border: 'none', color: 'var(--text-light)' }}>
+        ← Back
+      </button>
+
+      <div className="card" style={{ width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '1.5rem', textAlign: 'center' }}>
+        <h2 style={{ fontSize: '1.8rem', color: 'var(--text-dark)', fontWeight: '700' }}>
+          {type === 'doctor' ? 'Doctor Portal' : 'Staff Portal'}
+        </h2>
+        <p style={{ color: 'var(--text-gray)', marginTop: '-1rem' }}>
+          Please log in to continue
+        </p>
+        
+        {error && <div style={{ padding: '0.75rem', backgroundColor: '#FEE2E2', color: '#B91C1C', borderRadius: 'var(--border-radius-sm)', fontSize: '0.875rem' }}>{error}</div>}
+        
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'left' }}>
+          
+          {type === 'doctor' && (
+            <div style={{ backgroundColor: 'var(--bg-accent)', padding: '1rem', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-light)', fontSize: '0.8rem', color: 'var(--text-gray)' }}>
+              <strong>Demo Doctor Accounts:</strong><br/>
+              • doctor1@gmail.com (Dr. Sarah Jenkins)<br/>
+              • doctor2@gmail.com (Dr. Marcus Thorne)<br/>
+              • doctor3@gmail.com (Dr. Elena Rostova)<br/>
+              • doctor4@gmail.com (Dr. James Chen)<br/>
+              • doctor5@gmail.com (Dr. Aisha Patel)<br/>
+              <em>Password for all: 123</em>
+            </div>
+          )}
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-dark)', fontWeight: '500' }}>Email Address</label>
+            <input 
+              type="email" 
+              placeholder="you@clinic.com" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              required 
+              style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-light)', outline: 'none' }}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-dark)', fontWeight: '500' }}>Password</label>
+            <input 
+              type="password" 
+              placeholder="••••••••" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
+              style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-light)', outline: 'none' }}
+            />
+          </div>
+          <button type="submit" className="btn-primary" style={{ marginTop: '0.5rem', width: '100%' }}>
+            Login
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

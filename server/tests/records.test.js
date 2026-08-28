@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 
+process.env.JWT_SECRET = 'testsecret';
+
 const recordsRouter = require('../routes/records');
 const MedicalRecord = require('../models/MedicalRecord');
 const Staff = require('../models/Staff');
@@ -89,7 +91,7 @@ describe('EHR Records API', () => {
 
   it('4. PUT /api/records/:phone/profile updates existing record', async () => {
     await MedicalRecord.create({ patientPhone: '111', patientName: 'Original Name' });
-    const token = generateToken('nurse');
+    const token = generateToken('doctor');
     
     const res = await request(app)
       .put('/api/records/111/profile')

@@ -17,12 +17,12 @@ const staffSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['admin', 'doctor', 'nurse', 'pharmacist', 'receptionist'],
+      enum: ['admin', 'doctor', 'pharmacist', 'receptionist'],
       required: true,
     },
     specialty: {
       type: String,
-      // Only doctors usually need a specialty, but nurses could have it too
+      // Only doctors usually need a specialty
     },
     contactNumber: {
       type: String,

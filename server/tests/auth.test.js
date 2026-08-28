@@ -4,10 +4,11 @@ const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const bcrypt = require('bcryptjs');
 
+process.env.JWT_SECRET = 'testsecret';
+
 const authRoutes = require('../routes/auth');
 const { authenticate } = require('../middleware/auth');
-const Doctor = require('../models/Doctor');
-const Admin = require('../models/Admin');
+const Staff = require('../models/Staff');
 
 const app = express();
 app.use(express.json());
@@ -20,6 +21,7 @@ app.get('/api/protected', authenticate, (req, res) => {
 let mongoServer;
 
 beforeAll(async () => {
+  process.env.JWT_SECRET = 'testsecret';
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
   await mongoose.connect(mongoUri);
@@ -31,8 +33,7 @@ afterAll(async () => {
 });
 
 afterEach(async () => {
-  await Doctor.deleteMany({});
-  await Admin.deleteMany({});
+  await Staff.deleteMany({});
 });
 
 describe('Auth API', () => {
@@ -42,11 +43,12 @@ describe('Auth API', () => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(plainPassword, salt);
 
-    await Doctor.create({
+    await Staff.create({
       name: 'Dr. John Doe',
       email: 'john@example.com',
       passwordHash,
-      role: 'doctor'
+      role: 'doctor',
+      specialty: 'General'
     });
   });
 
@@ -116,7 +118,7 @@ describe('Auth API', () => {
 
       expect(res.statusCode).toEqual(200);
       expect(res.body.message).toBe('Success');
-      expect(res.body.user.userId).toBeDefined();
+      expect(res.body.user.id).toBeDefined();
     });
   });
 });

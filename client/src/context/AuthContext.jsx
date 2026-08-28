@@ -31,8 +31,15 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const registerDoctor = async (userData) => {
+    const response = await axios.post('/api/auth/register', userData);
+    setToken(response.data.token);
+    setUser(response.data.user);
+    return response.data.user;
+  };
+
   return (
-    <AuthContext.Provider value={{ token, user, login, logout }}>
+    <AuthContext.Provider value={{ token, user, login, logout, registerDoctor }}>
       {children}
     </AuthContext.Provider>
   );

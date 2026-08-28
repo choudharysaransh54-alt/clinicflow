@@ -152,6 +152,10 @@ router.post('/call/:patientId', authenticate, requireRole('admin', 'doctor'), as
     const patient = await Patient.findById(patientId);
     if (!patient) return res.status(404).json({ error: 'Patient not found' });
 
+    if (req.user.role === 'doctor' && patient.assignedDoctor?.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'Access denied: You can only call your own assigned patients' });
+    }
+
     const doctorId = patient.assignedDoctor;
 
     const updatedPatient = await StateService.transitionPatient(patientId, 'with_doctor', req.user);
@@ -212,6 +216,10 @@ router.post('/transfer', authenticate, requireRole('admin', 'doctor'), async (re
     const patient = await Patient.findById(patientId);
     if (!patient) return res.status(404).json({ error: 'Patient not found' });
 
+    if (req.user.role === 'doctor' && patient.assignedDoctor?.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'Access denied: You can only transfer your own assigned patients' });
+    }
+
     const fromDoctorId = patient.assignedDoctor;
 
     await StateService.transitionPatient(patientId, 'transferred', req.user, { note: reason, fromDoctorId, toDoctorId });
@@ -242,6 +250,10 @@ router.post('/complete/:patientId', authenticate, requireRole('admin', 'doctor')
     const patientId = req.params.patientId;
     const patient = await Patient.findById(patientId);
     if (!patient) return res.status(404).json({ error: 'Patient not found' });
+
+    if (req.user.role === 'doctor' && patient.assignedDoctor?.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'Access denied: You can only complete your own assigned patients' });
+    }
 
     // Clear timeout if patient was with doctor
     if (noShowTimeouts.has(patientId.toString())) {
@@ -281,6 +293,10 @@ router.post('/clear/:patientId', authenticate, requireRole('admin', 'doctor'), a
     const patientId = req.params.patientId;
     const patient = await Patient.findById(patientId);
     if (!patient) return res.status(404).json({ error: 'Patient not found' });
+
+    if (req.user.role === 'doctor' && patient.assignedDoctor?.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'Access denied: You can only clear your own assigned patients' });
+    }
 
     // Clear timeout if patient was with doctor
     if (noShowTimeouts.has(patientId.toString())) {

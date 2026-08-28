@@ -126,51 +126,57 @@ export default function PatientView() {
   };
 
   return (
-    <div className="patient-container">
-      <header className="patient-header">
-        <button className="patient-home-btn" onClick={() => navigate('/')}>← Home</button>
-        <div className="logo"><span className="logo-icon">C</span> ClinicFlow</div>
-        <div className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}>
-          <div className="dot"></div>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-color)' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2rem', backgroundColor: 'white', borderBottom: '1px solid var(--border-light)' }}>
+        <button className="btn-outline" onClick={() => navigate('/')} style={{ border: 'none', padding: '0.5rem 1rem' }}>← Home</button>
+        <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ width: '32px', height: '32px', backgroundColor: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--border-radius-full)' }}>C</div>
+          ClinicFlow
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: 'var(--text-gray)' }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: isConnected ? 'var(--status-called)' : 'var(--status-removed)' }}></span>
           {isConnected ? 'Live' : 'Connecting...'}
         </div>
       </header>
 
-      <main className="patient-main">
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '3rem 1rem' }}>
         {!patientData ? (
-          <div className="status-container" style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+          <div className="card" style={{ maxWidth: '600px', width: '100%', textAlign: 'center' }}>
             <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
               <button 
                 onClick={() => {setMode('status'); setError('');}} 
-                style={{ padding: '0.8rem 1.5rem', borderRadius: '20px', background: mode === 'status' ? 'var(--accent-primary)' : 'transparent', color: mode === 'status' ? 'white' : 'var(--text-primary)', border: '1px solid var(--accent-primary)', cursor: 'pointer' }}>
+                className={mode === 'status' ? 'btn-primary' : 'btn-outline'}
+              >
                 Check Status
               </button>
               <button 
                 onClick={() => {setMode('join'); setError('');}} 
-                style={{ padding: '0.8rem 1.5rem', borderRadius: '20px', background: mode === 'join' ? 'var(--accent-primary)' : 'transparent', color: mode === 'join' ? 'white' : 'var(--text-primary)', border: '1px solid var(--accent-primary)', cursor: 'pointer' }}>
+                className={mode === 'join' ? 'btn-primary' : 'btn-outline'}
+              >
                 Join Queue
               </button>
               <button 
                 onClick={() => {setMode('screen'); setError('');}} 
-                style={{ padding: '0.8rem 1.5rem', borderRadius: '20px', background: mode === 'screen' ? 'var(--accent-primary)' : 'transparent', color: mode === 'screen' ? 'white' : 'var(--text-primary)', border: '1px solid var(--accent-primary)', cursor: 'pointer' }}>
+                className={mode === 'screen' ? 'btn-primary' : 'btn-outline'}
+              >
                 ✨ Screen Symptoms
               </button>
             </div>
             
             {mode === 'status' ? (
               <>
-                <h2>Check Your Queue Status</h2>
-                <p>Enter the Ticket ID provided by the receptionist or SMS.</p>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Check Your Queue Status</h2>
+                <p style={{ color: 'var(--text-gray)' }}>Enter the Ticket ID provided by the receptionist or SMS.</p>
                 <form onSubmit={handleSubmit} style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
                   <input 
                     type="text" 
                     placeholder="e.g. T-1234"
                     value={ticketId}
                     onChange={(e) => setTicketId(e.target.value)}
-                    style={{ padding: '1rem', fontSize: '1.2rem', textAlign: 'center', borderRadius: '8px', border: '1px solid var(--border-glass)', background: 'var(--bg-card)', color: 'var(--text-primary)', width: '100%', maxWidth: '300px' }}
+                    style={{ padding: '1rem', fontSize: '1.25rem', textAlign: 'center', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-light)', width: '100%', maxWidth: '300px', outline: 'none' }}
                     required
                   />
-                  <button type="submit" className="call-next-btn pulse" style={{ width: '100%', maxWidth: '300px' }} disabled={loading}>
+                  <button type="submit" className="btn-primary" style={{ width: '100%', maxWidth: '300px' }} disabled={loading}>
                     {loading ? 'Checking...' : 'Check Status'}
                   </button>
                 </form>
@@ -178,55 +184,53 @@ export default function PatientView() {
             ) : mode === 'join' ? (
               <IntakeForm onSubmit={handleJoin} isLoading={loading} />
             ) : (
-              <div className="ai-screener-container">
-                <h2>✨ AI Symptom Checker</h2>
-                <p>Describe what you're feeling, and our AI will provide an immediate assessment.</p>
+              <div style={{ textAlign: 'left' }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem', textAlign: 'center' }}>✨ AI Symptom Checker</h2>
+                <p style={{ color: 'var(--text-gray)', textAlign: 'center', marginBottom: '1.5rem' }}>Describe what you're feeling, and our AI will provide an immediate assessment.</p>
                 <textarea 
-                  className="ai-textarea"
                   placeholder="e.g. I woke up with a severe headache and have a high fever..."
                   value={symptomInput}
                   onChange={(e) => setSymptomInput(e.target.value)}
+                  style={{ width: '100%', minHeight: '120px', padding: '1rem', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-light)', outline: 'none', resize: 'vertical', marginBottom: '1rem' }}
                 />
                 
                 {isAnalyzing ? (
-                  <div className="ai-loader">
-                    <div className="ai-dot"></div><div className="ai-dot"></div><div className="ai-dot"></div>
-                  </div>
+                  <div style={{ textAlign: 'center', color: 'var(--primary)', fontWeight: 500 }}>Thinking...</div>
                 ) : (
-                  <button className="ai-analyze-btn" onClick={handleScreenSymptoms} disabled={!symptomInput.trim()}>
+                  <button className="btn-primary" style={{ width: '100%' }} onClick={handleScreenSymptoms} disabled={!symptomInput.trim()}>
                     Analyze Symptoms
                   </button>
                 )}
 
                 {aiAnalysis && (
-                  <div className={`ai-result-card urgency-${aiAnalysis.urgency.includes('High') ? 'high' : aiAnalysis.urgency.includes('Medium') ? 'medium' : 'normal'}`}>
-                    <div className="urgency-badge">{aiAnalysis.urgency}</div>
+                  <div className="card" style={{ marginTop: '1.5rem', borderLeft: `4px solid ${aiAnalysis.urgency.includes('High') ? '#EF4444' : aiAnalysis.urgency.includes('Medium') ? '#F59E0B' : '#10B981'}` }}>
+                    <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.5rem', color: aiAnalysis.urgency.includes('High') ? '#EF4444' : aiAnalysis.urgency.includes('Medium') ? '#F59E0B' : '#10B981' }}>{aiAnalysis.urgency}</div>
                     
                     {aiAnalysis.urgency.includes('High') && (
-                      <p style={{ color: '#fca5a5', fontWeight: 'bold' }}>⚠️ Please seek immediate medical attention or proceed to the ER.</p>
+                      <p style={{ color: '#EF4444', fontWeight: 600, marginBottom: '1rem' }}>⚠️ Please seek immediate medical attention or proceed to the ER.</p>
                     )}
                     
-                    <div style={{ textAlign: 'left', marginTop: '1rem' }}>
-                      <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Possible Conditions:</p>
-                      <div className="conditions-list">
+                    <div style={{ marginTop: '1rem' }}>
+                      <p style={{ color: 'var(--text-gray)', fontSize: '0.875rem', marginBottom: '0.5rem' }}>Possible Conditions:</p>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                         {aiAnalysis.conditions.map((cond, i) => (
-                          <span key={i} className="condition-tag">{cond}</span>
+                          <span key={i} style={{ backgroundColor: 'var(--bg-accent)', color: 'var(--primary)', padding: '0.25rem 0.75rem', borderRadius: 'var(--border-radius-full)', fontSize: '0.875rem', fontWeight: 500 }}>{cond}</span>
                         ))}
                       </div>
                     </div>
                     
-                    <div style={{ textAlign: 'left', marginTop: '1rem' }}>
-                      <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Recommended Specialty:</p>
-                      <p style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>{aiAnalysis.specialty}</p>
+                    <div style={{ marginTop: '1rem' }}>
+                      <p style={{ color: 'var(--text-gray)', fontSize: '0.875rem' }}>Recommended Specialty:</p>
+                      <p style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-dark)' }}>{aiAnalysis.specialty}</p>
                     </div>
                   </div>
                 )}
               </div>
             )}
-            {error && <p style={{ color: '#ef4444', marginTop: '1rem', background: 'rgba(239, 68, 68, 0.1)', padding: '1rem', borderRadius: '8px' }}>{error}</p>}
+            {error && <p style={{ color: '#B91C1C', marginTop: '1.5rem', backgroundColor: '#FEE2E2', padding: '1rem', borderRadius: 'var(--border-radius-sm)', fontSize: '0.875rem' }}>{error}</p>}
           </div>
         ) : (
-          <div className="status-container" style={{ position: 'relative' }}>
+          <div style={{ position: 'relative', width: '100%', maxWidth: '600px' }}>
             <QueueStatus patient={patientData} queueData={null} />
             {!['completed', 'removed', 'with_doctor'].includes(patientData.status) && (
               <div style={{ marginTop: '2rem', textAlign: 'center', display: 'flex', gap: '1rem', justifyContent: 'center' }}>
@@ -238,14 +242,15 @@ export default function PatientView() {
                     setMode('join');
                     navigate('/patient');
                   }} 
-                  style={{ background: 'var(--accent-primary)', color: 'white', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '20px', cursor: 'pointer', transition: 'all 0.3s' }}
+                  className="btn-primary"
                 >
                   Add Another Patient
                 </button>
                 <button 
                   onClick={handleLeave} 
                   disabled={loading}
-                  style={{ background: 'transparent', color: '#ef4444', border: '1px solid #ef4444', padding: '0.6rem 1.2rem', borderRadius: '20px', cursor: 'pointer', transition: 'all 0.3s' }}
+                  className="btn-outline"
+                  style={{ borderColor: '#EF4444', color: '#EF4444' }}
                 >
                   {loading ? 'Processing...' : 'Leave Queue'}
                 </button>
@@ -261,7 +266,7 @@ export default function PatientView() {
                     setMode('join');
                     navigate('/patient');
                   }} 
-                  style={{ background: 'var(--accent-primary)', color: 'white', border: 'none', padding: '0.8rem 1.5rem', borderRadius: '20px', cursor: 'pointer', transition: 'all 0.3s', fontSize: '1rem', fontWeight: 'bold' }}
+                  className="btn-primary"
                 >
                   Start New Visit
                 </button>
@@ -273,7 +278,7 @@ export default function PatientView() {
                     setMode('status');
                     navigate('/patient');
                   }} 
-                  style={{ background: 'transparent', color: 'var(--accent-primary)', border: '1px solid var(--accent-primary)', padding: '0.8rem 1.5rem', borderRadius: '20px', cursor: 'pointer', transition: 'all 0.3s', fontSize: '1rem', fontWeight: 'bold' }}
+                  className="btn-outline"
                 >
                   Already in Queue?
                 </button>

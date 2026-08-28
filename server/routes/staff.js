@@ -1,5 +1,5 @@
 const express = require('express');
-const { requireRole } = require('../middleware/auth');
+const { authenticate, requireRole } = require('../middleware/auth');
 const Staff = require('../models/Staff');
 const Shift = require('../models/Shift');
 const bcrypt = require('bcryptjs');
@@ -7,8 +7,37 @@ const ReassignmentService = require('../services/ReassignmentService');
 
 const router = express.Router();
 
-// Get all staff members
-router.get('/', requireRole('admin', 'doctor'), async (req, res, next) => {
+// Get public list of all doctors and their availability
+router.get('/public', async (req, res, next) => {
+  try {
+    const doctors = await Staff.find({ role: 'doctor', status: 'active' })
+      .select('_id name specialty contactNumber')
+      .sort({ name: 1 })
+      .lean();
+
+    const now = new Date();
+    // Get all currently active shifts for these doctors
+    const activeShifts = await Shift.find({
+      staffId: { $in: doctors.map(d => d._id) },
+      startTime: { $lte: now },
+      endTime: { $gte: now }
+    }).lean();
+
+    const activeDoctorIds = activeShifts.map(s => s.staffId.toString());
+
+    const enrichedDoctors = doctors.map(doc => ({
+      ...doc,
+      isAvailable: activeDoctorIds.includes(doc._id.toString())
+    }));
+
+    res.json({ doctors: enrichedDoctors });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Get all staff members (Admin/Doctor only)
+router.get('/', authenticate, requireRole('admin', 'doctor'), async (req, res, next) => {
   try {
     const staff = await Staff.find().select('-passwordHash').sort({ role: 1, name: 1 });
     res.json({ staff });
@@ -18,7 +47,7 @@ router.get('/', requireRole('admin', 'doctor'), async (req, res, next) => {
 });
 
 // Create new staff member
-router.post('/', requireRole('admin'), async (req, res, next) => {
+router.post('/', authenticate, requireRole('admin'), async (req, res, next) => {
   try {
     const { name, email, password, role, specialty, contactNumber } = req.body;
     
@@ -56,7 +85,7 @@ router.post('/', requireRole('admin'), async (req, res, next) => {
 });
 
 // Update staff status (active/inactive)
-router.patch('/:id/status', requireRole('admin'), async (req, res, next) => {
+router.patch('/:id/status', authenticate, requireRole('admin'), async (req, res, next) => {
   try {
     const { status } = req.body;
     const staff = await Staff.findByIdAndUpdate(req.params.id, { status }, { new: true }).select('-passwordHash');
@@ -68,7 +97,7 @@ router.patch('/:id/status', requireRole('admin'), async (req, res, next) => {
 });
 
 // Start an immediate 8-hour shift for an existing doctor
-router.post('/:id/start-shift', requireRole('admin'), async (req, res, next) => {
+router.post('/:id/start-shift', authenticate, requireRole('admin'), async (req, res, next) => {
   try {
     const staff = await Staff.findById(req.params.id);
     if (!staff) return res.status(404).json({ error: 'Staff not found' });
@@ -92,7 +121,7 @@ router.post('/:id/start-shift', requireRole('admin'), async (req, res, next) => 
 });
 
 // Stop the currently active shift for a doctor
-router.post('/:id/stop-shift', requireRole('admin'), async (req, res, next) => {
+router.post('/:id/stop-shift', authenticate, requireRole('admin'), async (req, res, next) => {
   try {
     const now = new Date();
     const activeShift = await Shift.findOne({

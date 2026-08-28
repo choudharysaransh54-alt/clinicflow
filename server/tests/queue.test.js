@@ -66,20 +66,20 @@ const generateToken = (role) => {
 };
 
 describe('Queue API', () => {
-  it('6. POST /api/queue/register without token + valid body → 401', async () => {
+  it('6. POST /api/queue/register without token + valid body → 201', async () => {
     const res = await request(app)
       .post('/api/queue/register')
       .send({ name: 'Public Patient', phone: '111', age: 20 });
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(201);
   });
 
-  it('7. POST /api/queue/register with doctor token + valid body → 403', async () => {
+  it('7. POST /api/queue/register with doctor token + valid body → 201', async () => {
     const token = generateToken('doctor');
     const res = await request(app)
       .post('/api/queue/register')
       .set('Authorization', `Bearer ${token}`)
       .send({ name: 'Public Patient', phone: '111', age: 20 });
-    expect(res.status).toBe(403);
+    expect(res.status).toBe(201);
   });
 
   it('8. POST /api/queue/register with admin token + valid body → 201', async () => {

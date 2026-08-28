@@ -38,12 +38,6 @@ async function seed() {
       specialty: 'Pediatrics',
     });
 
-    await Staff.create({
-      name: 'Nurse Ratched',
-      email: 'nurse@clinic.com',
-      passwordHash: sharedHash,
-      role: 'nurse',
-    });
 
     // Create an active shift for the doctors so they show up on the dashboard
     const Shift = require('./models/Shift');
@@ -65,7 +59,7 @@ async function seed() {
       roleDuringShift: 'Attending'
     });
 
-    console.log('Successfully seeded admin, doctor, and nurse accounts in the new Staff collection!');
+    console.log('Successfully seeded admin and doctor accounts in the new Staff collection!');
   } catch (error) {
     console.error('Seeding failed:', error);
   } finally {

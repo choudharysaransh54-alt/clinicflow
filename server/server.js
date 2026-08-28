@@ -4,6 +4,7 @@ require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
+const helmet = require('helmet');
 const { Server } = require('socket.io');
 const { createAdapter } = require('@socket.io/redis-adapter');
 const { startReassignmentJob } = require('./jobs/reassignmentJob');
@@ -16,14 +17,14 @@ const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 
 // ─── Express Setup ───────────────────────────────────────
 const app = express();
+app.use(helmet());
 app.use(cors({ origin: CLIENT_URL }));
 app.use(express.json());
 
 // ─── Mount REST API Routes ───────────────────────────────
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/queue', require('./routes/queue'));
-app.use('/api/analytics', require('./middleware/auth').authenticate, require('./routes/analytics'));
-app.use('/api/staff', require('./middleware/auth').authenticate, require('./routes/staff'));
+app.use('/api/staff', require('./routes/staff'));
 app.use('/api/shifts', require('./middleware/auth').authenticate, require('./routes/shifts'));
 app.use('/api/records', require('./middleware/auth').authenticate, require('./routes/records'));
 app.use('/api/ai', require('./routes/ai'));

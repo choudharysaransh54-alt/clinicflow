@@ -6,7 +6,7 @@ const Staff = require('../models/Staff');
 const router = express.Router();
 
 // Get shifts (optionally filter by date range or staff ID)
-router.get('/', requireRole('admin', 'doctor', 'nurse', 'receptionist'), async (req, res, next) => {
+router.get('/', requireRole('admin', 'doctor', 'receptionist'), async (req, res, next) => {
   try {
     const { start, end, staffId } = req.query;
     

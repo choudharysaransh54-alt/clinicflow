@@ -3,11 +3,21 @@ const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const Staff = require('../models/Staff');
+const rateLimit = require('express-rate-limit');
 
 const router = express.Router();
 
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 requests per windowMs
+  message: { message: 'Too many authentication attempts, please try again after 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 router.post(
   '/login',
+  authLimiter,
   [
     body('email').isEmail().withMessage('Please provide a valid email'),
     body('password').notEmpty().withMessage('Password is required'),
@@ -40,7 +50,7 @@ router.post(
 
       const token = jwt.sign(
         payload,
-        process.env.JWT_SECRET || 'fallback_secret',
+        process.env.JWT_SECRET,
         { expiresIn: '1d' }
       );
 
@@ -51,5 +61,7 @@ router.post(
     }
   }
 );
+
+
 
 module.exports = router;

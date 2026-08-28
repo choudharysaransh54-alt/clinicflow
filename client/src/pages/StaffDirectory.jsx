@@ -84,82 +84,90 @@ export default function StaffDirectory() {
   };
 
   return (
-    <div className="dashboard-container">
-      <header className="dashboard-header">
-        <div className="header-brand">
-          <div className="logo-icon">C</div>
-          <h1>Staff Directory</h1>
+    <div style={{ padding: '2rem', maxWidth: '1440px', margin: '0 auto' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <div>
+          <h1 style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-dark)' }}>Staff Directory</h1>
+          <p style={{ color: 'var(--text-gray)' }}>Manage hospital employees and their shift statuses</p>
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <button onClick={() => navigate('/admin')} style={{ padding: '0.6rem 1rem', background: 'transparent', color: 'white', border: '1px solid white', borderRadius: '4px', cursor: 'pointer' }}>Back to Dashboard</button>
-          <button onClick={() => navigate('/admin/shifts')} style={{ padding: '0.6rem 1rem', background: 'transparent', color: 'white', border: '1px solid white', borderRadius: '4px', cursor: 'pointer' }}>Shift Roster</button>
-          <button onClick={logout} className="logout-btn" style={{ padding: '0.6rem 1.2rem', borderRadius: '4px', cursor: 'pointer' }}>Logout</button>
+          <button onClick={() => navigate('/admin')} className="btn-outline">Back to Dashboard</button>
+          <button onClick={() => navigate('/admin/shifts')} className="btn-outline">Shift Roster</button>
         </div>
       </header>
 
-      <main className="dashboard-main" style={{ display: 'block', maxWidth: '1000px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-          <h2>Hospital Employees</h2>
-          <button onClick={() => setShowAddForm(!showAddForm)} style={{ padding: '0.8rem 1.5rem', background: 'var(--accent-primary)', color: 'white', border: 'none', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold' }}>
+      <main style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Hospital Employees</h2>
+          <button onClick={() => setShowAddForm(!showAddForm)} className="btn-primary">
             {showAddForm ? 'Cancel' : '+ Add New Staff'}
           </button>
         </div>
 
         {showAddForm && (
-          <div style={{ background: 'var(--bg-card)', padding: '2rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-glass)', marginBottom: '2rem' }}>
-            <h3 style={{ marginTop: 0 }}>Register New Staff Member</h3>
-            {error && <p style={{ color: '#fca5a5' }}>{error}</p>}
+          <div className="card">
+            <h3 style={{ marginTop: 0, marginBottom: '1rem', fontSize: '1.1rem', fontWeight: 600 }}>Register New Staff Member</h3>
+            {error && <div style={{ padding: '0.75rem', backgroundColor: '#FEE2E2', color: '#B91C1C', borderRadius: 'var(--border-radius-sm)', marginBottom: '1rem', fontSize: '0.875rem' }}>{error}</div>}
             <form onSubmit={handleAdd} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <input type="text" placeholder="Full Name" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required style={{ padding: '0.8rem', borderRadius: '4px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid var(--border-glass)' }} />
-              <input type="email" placeholder="Email Address" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required style={{ padding: '0.8rem', borderRadius: '4px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid var(--border-glass)' }} />
-              <input type="password" placeholder="Password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} required style={{ padding: '0.8rem', borderRadius: '4px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid var(--border-glass)' }} />
+              <input type="text" placeholder="Full Name" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required style={{ padding: '0.75rem', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-light)', outline: 'none' }} />
+              <input type="email" placeholder="Email Address" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required style={{ padding: '0.75rem', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-light)', outline: 'none' }} />
+              <input type="password" placeholder="Password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} required style={{ padding: '0.75rem', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-light)', outline: 'none' }} />
               
-              <select value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})} style={{ padding: '0.8rem', borderRadius: '4px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid var(--border-glass)' }}>
+              <select value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})} style={{ padding: '0.75rem', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-light)', outline: 'none' }}>
                 <option value="doctor">Doctor</option>
-                <option value="nurse">Nurse</option>
                 <option value="admin">Admin</option>
                 <option value="pharmacist">Pharmacist</option>
                 <option value="receptionist">Receptionist</option>
               </select>
 
               {formData.role === 'doctor' && (
-                <input type="text" placeholder="Specialty (e.g. Cardiology)" value={formData.specialty} onChange={e => setFormData({...formData, specialty: e.target.value})} required style={{ padding: '0.8rem', borderRadius: '4px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid var(--border-glass)' }} />
+                <input type="text" placeholder="Specialty (e.g. Cardiology)" value={formData.specialty} onChange={e => setFormData({...formData, specialty: e.target.value})} required style={{ padding: '0.75rem', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-light)', outline: 'none' }} />
               )}
               
-              <input type="text" placeholder="Contact Number" value={formData.contactNumber} onChange={e => setFormData({...formData, contactNumber: e.target.value})} style={{ padding: '0.8rem', borderRadius: '4px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid var(--border-glass)' }} />
+              <input type="text" placeholder="Contact Number" value={formData.contactNumber} onChange={e => setFormData({...formData, contactNumber: e.target.value})} style={{ padding: '0.75rem', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-light)', outline: 'none' }} />
               
-              <button type="submit" style={{ gridColumn: 'span 2', padding: '1rem', background: 'var(--accent-secondary)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Create Staff Account</button>
+              <button type="submit" className="btn-primary" style={{ gridColumn: 'span 2' }}>Create Staff Account</button>
             </form>
           </div>
         )}
 
-        <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-glass)', overflow: 'hidden' }}>
+        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
-              <tr style={{ background: 'rgba(0,0,0,0.2)' }}>
-                <th style={{ padding: '1rem' }}>Name</th>
-                <th style={{ padding: '1rem' }}>Role</th>
-                <th style={{ padding: '1rem' }}>Email</th>
-                <th style={{ padding: '1rem' }}>Status</th>
-                <th style={{ padding: '1rem' }}>Actions</th>
+              <tr style={{ backgroundColor: 'var(--bg-accent)', borderBottom: '1px solid var(--border-light)' }}>
+                <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-gray)' }}>Name</th>
+                <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-gray)' }}>Role</th>
+                <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-gray)' }}>Email</th>
+                <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-gray)' }}>Status</th>
+                <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-gray)' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {staffList.map(staff => (
-                <tr key={staff._id} style={{ borderTop: '1px solid var(--border-glass)' }}>
+                <tr key={staff._id} style={{ borderBottom: '1px solid var(--border-light)' }}>
                   <td style={{ padding: '1rem' }}>
-                    <div style={{ fontWeight: 'bold' }}>{staff.name}</div>
-                    {staff.specialty && <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{staff.specialty}</div>}
+                    <div style={{ fontWeight: 600, color: 'var(--text-dark)' }}>{staff.name}</div>
+                    {staff.specialty && <div style={{ fontSize: '0.85rem', color: 'var(--text-gray)' }}>{staff.specialty}</div>}
                   </td>
-                  <td style={{ padding: '1rem', textTransform: 'capitalize' }}>{staff.role}</td>
-                  <td style={{ padding: '1rem' }}>{staff.email}</td>
+                  <td style={{ padding: '1rem', textTransform: 'capitalize', color: 'var(--text-dark)' }}>{staff.role}</td>
+                  <td style={{ padding: '1rem', color: 'var(--text-dark)' }}>{staff.email}</td>
                   <td style={{ padding: '1rem' }}>
-                    <span className={`status-badge ${staff.status === 'active' ? 'live' : 'offline'}`}>{staff.status}</span>
+                    <span style={{ 
+                      padding: '0.25rem 0.75rem', 
+                      borderRadius: '9999px', 
+                      fontSize: '0.75rem', 
+                      fontWeight: 600, 
+                      backgroundColor: staff.status === 'active' ? '#D1FAE5' : '#FEE2E2',
+                      color: staff.status === 'active' ? '#065F46' : '#991B1B'
+                    }}>
+                      {staff.status}
+                    </span>
                   </td>
                   <td style={{ padding: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     <button 
                       onClick={() => toggleStatus(staff._id, staff.status)}
-                      style={{ padding: '0.4rem 0.8rem', background: staff.status === 'active' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                      className="btn-outline"
+                      style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
                     >
                       {staff.status === 'active' ? 'Deactivate' : 'Activate'}
                     </button>
@@ -167,7 +175,8 @@ export default function StaffDirectory() {
                       activeShiftIds.has(staff._id) ? (
                         <button
                           onClick={() => stopShift(staff._id, staff.name)}
-                          style={{ padding: '0.4rem 0.8rem', background: 'rgba(239, 68, 68, 0.25)', color: '#f87171', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                          className="btn-outline"
+                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', borderColor: '#FCA5A5', color: '#DC2626' }}
                           title="End this doctor's shift — removes them from the live queue"
                         >
                           🔴 Stop Shift
@@ -175,7 +184,8 @@ export default function StaffDirectory() {
                       ) : (
                         <button
                           onClick={() => startShift(staff._id, staff.name)}
-                          style={{ padding: '0.4rem 0.8rem', background: 'rgba(56, 189, 248, 0.25)', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.4)', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                          className="btn-outline"
+                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', borderColor: '#6EE7B7', color: '#059669' }}
                           title="Start an 8-hour shift — doctor appears in the live queue"
                         >
                           🟢 Start Shift

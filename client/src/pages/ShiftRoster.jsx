@@ -56,68 +56,90 @@ export default function ShiftRoster() {
   };
 
   return (
-    <div className="dashboard-container">
-      <header className="dashboard-header">
-        <div className="header-brand">
-          <div className="logo-icon">C</div>
-          <h1>Shift Roster</h1>
+    <div style={{ padding: '2rem', maxWidth: '1440px', margin: '0 auto' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <div>
+          <h1 style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-dark)' }}>Shift Roster</h1>
+          <p style={{ color: 'var(--text-gray)' }}>Schedule and manage staff shifts</p>
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <button onClick={() => navigate('/admin')} style={{ padding: '0.6rem 1rem', background: 'transparent', color: 'white', border: '1px solid white', borderRadius: '4px', cursor: 'pointer' }}>Back to Dashboard</button>
-          <button onClick={() => navigate('/admin/staff')} style={{ padding: '0.6rem 1rem', background: 'transparent', color: 'white', border: '1px solid white', borderRadius: '4px', cursor: 'pointer' }}>Staff Directory</button>
-          <button onClick={logout} className="logout-btn" style={{ padding: '0.6rem 1.2rem', borderRadius: '4px', cursor: 'pointer' }}>Logout</button>
+          <button onClick={() => navigate('/admin')} className="btn-outline">Back to Dashboard</button>
+          <button onClick={() => navigate('/admin/staff')} className="btn-outline">Staff Directory</button>
         </div>
       </header>
 
-      <main className="dashboard-main" style={{ gridTemplateColumns: '1fr 2fr' }}>
-        <div className="dashboard-left">
-          <section className="current-patient-section">
-            <h2>Assign New Shift</h2>
-            <div style={{ background: 'var(--bg-card)', padding: '2rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-glass)' }}>
-              {error && <p style={{ color: '#fca5a5' }}>{error}</p>}
-              <form onSubmit={handleAssign} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                <select value={formData.staffId} onChange={e => setFormData({...formData, staffId: e.target.value})} required style={{ padding: '0.8rem', borderRadius: '4px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid var(--border-glass)' }}>
-                  <option value="" disabled>Select Staff Member...</option>
-                  {staff.map(s => <option key={s._id} value={s._id}>{s.name} ({s.role})</option>)}
-                </select>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Start Time</label>
-                  <input type="datetime-local" value={formData.startTime} onChange={e => setFormData({...formData, startTime: e.target.value})} required style={{ padding: '0.8rem', borderRadius: '4px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid var(--border-glass)' }} />
+      <main style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem' }}>
+        <div>
+          <section>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' }}>Assign New Shift</h2>
+            <div className="card">
+              {error && <div style={{ padding: '0.75rem', backgroundColor: '#FEE2E2', color: '#B91C1C', borderRadius: 'var(--border-radius-sm)', marginBottom: '1rem', fontSize: '0.875rem' }}>{error}</div>}
+              <form onSubmit={handleAssign} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>Staff Member</label>
+                  <select value={formData.staffId} onChange={e => setFormData({...formData, staffId: e.target.value})} required style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-light)', outline: 'none' }}>
+                    <option value="" disabled>Select Staff Member...</option>
+                    {staff.map(s => <option key={s._id} value={s._id}>{s.name} ({s.role})</option>)}
+                  </select>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>End Time</label>
-                  <input type="datetime-local" value={formData.endTime} onChange={e => setFormData({...formData, endTime: e.target.value})} required style={{ padding: '0.8rem', borderRadius: '4px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid var(--border-glass)' }} />
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>Start Time</label>
+                    <input type="datetime-local" value={formData.startTime} onChange={e => setFormData({...formData, startTime: e.target.value})} required style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-light)', outline: 'none' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>End Time</label>
+                    <input type="datetime-local" value={formData.endTime} onChange={e => setFormData({...formData, endTime: e.target.value})} required style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-light)', outline: 'none' }} />
+                  </div>
+                </div>
+                
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>Department (Optional)</label>
+                  <input type="text" placeholder="e.g. ER, Ward A" value={formData.department} onChange={e => setFormData({...formData, department: e.target.value})} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-light)', outline: 'none' }} />
+                </div>
+                
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>Role During Shift (Optional)</label>
+                  <input type="text" placeholder="e.g. Attending" value={formData.roleDuringShift} onChange={e => setFormData({...formData, roleDuringShift: e.target.value})} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-light)', outline: 'none' }} />
                 </div>
 
-                <input type="text" placeholder="Department (e.g. ER, Ward A)" value={formData.department} onChange={e => setFormData({...formData, department: e.target.value})} style={{ padding: '0.8rem', borderRadius: '4px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid var(--border-glass)' }} />
-                <input type="text" placeholder="Role During Shift" value={formData.roleDuringShift} onChange={e => setFormData({...formData, roleDuringShift: e.target.value})} style={{ padding: '0.8rem', borderRadius: '4px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid var(--border-glass)' }} />
-
-                <button type="submit" style={{ padding: '1rem', background: 'var(--accent-primary)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Schedule Shift</button>
+                <button type="submit" className="btn-primary" style={{ marginTop: '0.5rem' }}>Schedule Shift</button>
               </form>
             </div>
           </section>
         </div>
 
-        <div className="dashboard-right">
-          <h2>Scheduled Shifts</h2>
+        <div>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' }}>Scheduled Shifts</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {shifts.map(shift => (
-              <div key={shift._id} style={{ background: 'var(--bg-card)', padding: '1.5rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-glass)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div key={shift._id} className="card hover-lift" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem' }}>
                 <div>
-                  <h3 style={{ margin: 0, color: 'var(--text-primary)' }}>{shift.staffId?.name} <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>({shift.staffId?.role})</span></h3>
-                  <div style={{ marginTop: '0.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                    <strong>Time:</strong> {new Date(shift.startTime).toLocaleString()} - {new Date(shift.endTime).toLocaleTimeString()}
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-dark)' }}>
+                    {shift.staffId?.name} <span style={{ fontSize: '0.85rem', color: 'var(--text-gray)', fontWeight: 400 }}>({shift.staffId?.role})</span>
+                  </h3>
+                  <div style={{ marginTop: '0.5rem', color: 'var(--text-gray)', fontSize: '0.9rem' }}>
+                    <span style={{ fontWeight: 500, color: 'var(--text-dark)' }}>Time:</span> {new Date(shift.startTime).toLocaleString()} - {new Date(shift.endTime).toLocaleTimeString()}
                   </div>
-                  <div style={{ marginTop: '0.2rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                    <strong>Dept:</strong> {shift.department || 'N/A'} | <strong>Role:</strong> {shift.roleDuringShift || 'N/A'}
+                  <div style={{ marginTop: '0.25rem', color: 'var(--text-gray)', fontSize: '0.9rem' }}>
+                    <span style={{ fontWeight: 500, color: 'var(--text-dark)' }}>Dept:</span> {shift.department || 'N/A'} | <span style={{ fontWeight: 500, color: 'var(--text-dark)' }}>Role:</span> {shift.roleDuringShift || 'N/A'}
                   </div>
                 </div>
-                <button onClick={() => handleDelete(shift._id)} style={{ padding: '0.5rem 1rem', background: 'rgba(239, 68, 68, 0.2)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Cancel Shift</button>
+                <button 
+                  onClick={() => handleDelete(shift._id)} 
+                  className="btn-outline" 
+                  style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', borderColor: '#FCA5A5', color: '#DC2626' }}
+                >
+                  Cancel Shift
+                </button>
               </div>
             ))}
-            {shifts.length === 0 && <p style={{ color: 'var(--text-muted)' }}>No shifts scheduled.</p>}
+            {shifts.length === 0 && (
+              <div className="card" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-light)' }}>
+                No shifts scheduled.
+              </div>
+            )}
           </div>
         </div>
       </main>
